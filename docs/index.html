@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PinkCat Manager — Aplikasi Utilitas Android Bertema Kucing Pink</title>
+  <link rel="icon" type="image/jpeg" href="icon.jpg">
+  <style>
+    :root {
+      --primary: #E91E63;
+      --primary-hover: #D81B60;
+      --primary-container: #FFD8E4;
+      --secondary: #8E24AA;
+      --secondary-container: #F3E5F5;
+      --bg: #FFF7F9;
+      --card-bg: #FFFFFF;
+      --text: #26181D;
+      --text-muted: #6B4E5A;
+      --border: #F8BBD0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(233, 30, 99, 0.2);
+    }
+    .brand span {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+    @media (max-width: 768px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .actions {
+        justify-content: center;
+      }
+    }
+    .hero-text h1 {
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .hero-text h1 span {
+      color: var(--primary);
+    }
+    .hero-text p {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 6px 16px rgba(233, 30, 99, 0.35);
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background-color: var(--secondary-container);
+      color: var(--secondary);
+      border: 1px solid rgba(142, 36, 170, 0.2);
+    }
+    .btn-secondary:hover {
+      background-color: #E1BEE7;
+      transform: translateY(-2px);
+    }
+    .hero-image {
+      text-align: center;
+    }
+    .hero-image img {
+      max-width: 85%;
+      border-radius: 28px;
+      box-shadow: 0 16px 36px rgba(233, 30, 99, 0.18);
+      border: 4px solid #FFFFFF;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background-color: var(--primary-container);
+      color: #4D0026;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(233, 30, 99, 0.05);
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+    }
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+    .card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .card p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .privacy-banner {
+      background: linear-gradient(135deg, var(--primary-container), var(--secondary-container));
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 48px;
+    }
+    .privacy-banner h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #3B071E;
+      margin-bottom: 10px;
+    }
+    .privacy-banner p {
+      color: #4D2638;
+      font-size: 14px;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="#" class="brand">
+        <img src="icon.jpg" alt="PinkCat Logo">
+        <span>PinkCat Manager</span>
+      </a>
+      <a href="https://github.com/USERNAME/REPOSITORY" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">
+        ⭐ Star on GitHub
+      </a>
+    </header>
+
+    <section class="hero">
+      <div class="hero-text">
+        <div class="badge">🐾 Android Utility & Permission Inspector</div>
+        <h1>Kelola & Periksa Perangkat Anda Bersama <span>PinkCat Manager</span></h1>
+        <p>Aplikasi Android utilitas modern bertema kucing pink untuk memeriksa spesifikasi hardware, status sensor, dan audit izin aplikasi secara 100% legal dan transparan.</p>
+        <div class="actions">
+          <a href="https://github.com/USERNAME/REPOSITORY/releases/latest" class="btn btn-primary">
+            📲 Download APK Terbaru
+          </a>
+          <a href="https://github.com/USERNAME/REPOSITORY" class="btn btn-secondary">
+            💻 Lihat Source Code
+          </a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="hero.jpg" alt="Maskot PinkCat Manager">
+      </div>
+    </section>
+
+    <h2 class="section-title">✨ Fitur Unggulan</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <h3>Spesifikasi Perangkat Nyata</h3>
+        <p>Informasi akurat dari Android API: CPU ABI & Cores, RAM aktual, Penyimpanan internal, Baterai, Jaringan Wi-Fi/Seluler, Bluetooth, dan Resolusi Layar.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🔐</div>
+        <h3>Audit Izin Aplikasi (Permissions)</h3>
+        <p>Periksa izin sensitif yang diminta setiap aplikasi terpasang (Kamera, Mikrofon, Lokasi, Notifikasi) secara legal melalui Android PackageManager.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <h3>Manajemen & Info Detail Aplikasi</h3>
+        <p>Buka aplikasi langsung via Launcher Activity atau buka Pengaturan Aplikasi sistem untuk mengelola penyimpanan dan izin secara mudah.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🔎</div>
+        <h3>Pencarian Cepat & Filter Cerdas</h3>
+        <p>Temukan aplikasi berdasarkan nama atau package. Filter cepat: Semua Aplikasi, Punya Izin, Aplikasi Pengguna, dan Aplikasi Sistem.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3>Pemeriksaan Keamanan Nyata</h3>
+        <p>Status Kunci Layar (PIN/Pola/Biometrik), Opsi Pengembang, USB Debugging, dan panduan Google Play Protect tanpa status palsu.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🌙</div>
+        <h3>Tema Pink Cat & Mode Gelap</h3>
+        <p>UI pastel pink yang lembut, clean, dan profesional dengan dukungan Dark Mode penuh yang nyaman digunakan kapan saja.</p>
+      </div>
+    </div>
+
+    <div class="privacy-banner">
+      <h3>🔒 100% Offline & Mengutamakan Privasi</h3>
+      <p>PinkCat Manager tidak mengirimkan satu pun data ke internet. Seluruh analisis spesifikasi dan perizinan diproses secara lokal di perangkat Anda.</p>
+    </div>
+
+    <footer>
+      <p>© 2026 PinkCat Manager • Dibuat dengan Kotlin & Jetpack Compose • Dilindungi Lisensi Apache 2.0</p>
+      <p style="margin-top: 6px;">
+        <a href="https://github.com/USERNAME/REPOSITORY/releases" style="color: var(--primary); text-decoration: none; font-weight: 600;">Semua Versi GitHub Releases</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

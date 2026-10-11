@@ -1,0 +1,6 @@
+{
+  "name": "PinkCat Manager",
+  "description": "Aplikasi utilitas Android bertema kucing pink untuk memeriksa informasi perangkat dan izin aplikasi nyata.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

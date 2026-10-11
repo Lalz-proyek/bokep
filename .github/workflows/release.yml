@@ -1,0 +1,100 @@
+name: Publish GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Publish Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x gradlew
+
+      - name: Prepare Signing Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Decoding provided release keystore..."
+            echo "$KEYSTORE_BASE64" | base64 --decode > my-upload-key.jks
+          else
+            echo "Generating production release keystore..."
+            keytool -genkey -v -keystore my-upload-key.jks \
+              -alias upload -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass android -keypass android \
+              -dname "CN=PinkCatManager, OU=Release, O=PinkCat, L=Jakarta, ST=ID, C=ID"
+            echo "STORE_PASSWORD=android" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=android" >> $GITHUB_ENV
+          fi
+          echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/my-upload-key.jks" >> $GITHUB_ENV
+
+      - name: Build Release APK
+        env:
+          STORE_PASSWORD: ${{ env.STORE_PASSWORD || secrets.STORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ env.KEY_PASSWORD || secrets.KEY_PASSWORD || 'android' }}
+        run: ./gradlew assembleRelease
+
+      - name: Package Release APK
+        id: package_apk
+        run: |
+          TAG_NAME="${{ github.ref_name }}"
+          APK_NAME="PinkCat-Manager-${TAG_NAME}.apk"
+          RAW_APK=$(find app/build/outputs/apk/release/ -name "*.apk" | head -n 1)
+
+          if [ -f "$RAW_APK" ]; then
+            mkdir -p dist
+            cp "$RAW_APK" "dist/${APK_NAME}"
+            echo "release_apk=dist/${APK_NAME}" >> $GITHUB_OUTPUT
+            echo "apk_filename=${APK_NAME}" >> $GITHUB_OUTPUT
+            echo "Release APK packaged successfully: dist/${APK_NAME}"
+          else
+            echo "ERROR: Release APK could not be found!"
+            exit 1
+          fi
+
+      - name: Create GitHub Release and Attach APK
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "PinkCat Manager ${{ github.ref_name }}"
+          tag_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: ${{ steps.package_apk.outputs.release_apk }}
+          body: |
+            # 🐱 PinkCat Manager ${{ github.ref_name }}
+
+            Aplikasi utilitas Android bertema kucing pink untuk memeriksa informasi perangkat dan izin aplikasi nyata.
+
+            ### ✨ Fitur Unggulan
+            - 📱 **Device Information**: Spesifikasi lengkap CPU, RAM, Penyimpanan, Baterai, Jaringan, Bluetooth, dan Layar langsung dari Android API resmi.
+            - 🔐 **Permission Status**: Audit izin sensitif (Kamera, Mikrofon, Lokasi, Notifikasi) secara legal dan transparan.
+            - 📦 **Installed Apps Management**: Jelajahi seluruh aplikasi terpasang, detail target SDK, waktu instalasi, dan buka aplikasi atau info aplikasi langsung.
+            - 🔎 **Pencarian & Filter**: Cari berdasarkan nama / package dan filter berdasarkan kategori (Semua, Berizin, Pengguna, Sistem).
+            - 🛡️ **Pemeriksaan Keamanan**: Status kunci layar, opsi pengembang, USB debugging, dan Play Protect.
+            - 🌸 **Cute Modern UI**: Desain Material 3 pastel pink, rounded card, maskot kucing pink, dan Dark Mode penuh.
+
+            ### 📲 Cara Instalasi
+            1. Download file **${{ steps.package_apk.outputs.apk_filename }}** di bawah ini.
+            2. Buka file APK di perangkat Android Anda.
+            3. Jika muncul konfirmasi instalasi dari sumber tidak dikenal, pilih **Izinkan** / **Allow from this source**.
+            4. PinkCat Manager siap digunakan secara 100% offline dan aman!
