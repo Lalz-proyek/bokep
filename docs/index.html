@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PinkCat Manager — Aplikasi Utilitas Android Bertema Kucing Pink</title>
+  <title>PinkCat Manager — Download APK Android</title>
   <link rel="icon" type="image/jpeg" href="icon.jpg">
   <style>
     :root {
@@ -17,6 +17,8 @@
       --text: #26181D;
       --text-muted: #6B4E5A;
       --border: #F8BBD0;
+      --success: #2E7D32;
+      --warning: #E65100;
     }
     * {
       box-sizing: border-box;
@@ -65,7 +67,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 40px;
       align-items: center;
-      margin-bottom: 48px;
+      margin-bottom: 36px;
     }
     @media (max-width: 768px) {
       .hero {
@@ -95,16 +97,19 @@
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
+      align-items: center;
     }
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 24px;
+      padding: 14px 28px;
       border-radius: 16px;
       text-decoration: none;
       font-weight: 700;
       font-size: 15px;
+      cursor: pointer;
+      border: none;
       transition: all 0.2s ease;
     }
     .btn-primary {
@@ -144,14 +149,57 @@
       font-weight: 700;
       margin-bottom: 14px;
     }
+
+    /* Status Notification Box */
+    .status-box {
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-box.warning {
+      display: flex;
+      background-color: #FFF3E0;
+      border: 1px solid #FFE082;
+      color: var(--warning);
+      font-weight: 600;
+    }
+    .status-box.success {
+      display: flex;
+      background-color: #E8F5E9;
+      border: 1px solid #A5D6A7;
+      color: var(--success);
+      font-weight: 600;
+    }
+    .status-box.loading {
+      display: flex;
+      background-color: var(--primary-container);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .repo-config {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .repo-config input {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      margin-left: 6px;
+      outline: none;
+    }
+
     .section-title {
       font-size: 24px;
       font-weight: 800;
       margin-bottom: 24px;
       color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
     .grid {
       display: grid;
@@ -165,10 +213,6 @@
       border-radius: 20px;
       padding: 24px;
       box-shadow: 0 4px 12px rgba(233, 30, 99, 0.05);
-      transition: transform 0.2s ease;
-    }
-    .card:hover {
-      transform: translateY(-4px);
     }
     .card-icon {
       font-size: 28px;
@@ -216,23 +260,31 @@
         <img src="icon.jpg" alt="PinkCat Logo">
         <span>PinkCat Manager</span>
       </a>
-      <a href="https://github.com/USERNAME/REPOSITORY" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">
-        ⭐ Star on GitHub
+      <a id="headerRepoLink" href="#" target="_blank" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">
+        ⭐ Source Code di GitHub
       </a>
     </header>
 
     <section class="hero">
       <div class="hero-text">
-        <div class="badge">🐾 Android Utility & Permission Inspector</div>
+        <div class="badge">🐾 Aplikasi Utilitas Android & Audit Izin Nyata</div>
         <h1>Kelola & Periksa Perangkat Anda Bersama <span>PinkCat Manager</span></h1>
-        <p>Aplikasi Android utilitas modern bertema kucing pink untuk memeriksa spesifikasi hardware, status sensor, dan audit izin aplikasi secara 100% legal dan transparan.</p>
+        <p>Aplikasi Android utilitas modern bertema kucing pink untuk memeriksa spesifikasi hardware, status baterai, RAM, dan audit izin aplikasi secara 100% legal melalui Android API resmi.</p>
+        
         <div class="actions">
-          <a href="https://github.com/USERNAME/REPOSITORY/releases/latest" class="btn btn-primary">
-            📲 Download APK Terbaru
+          <button id="downloadBtn" class="btn btn-primary" onclick="handleDownloadClick()">
+            📲 Download APK Langsung
+          </button>
+          <a id="releasesPageBtn" href="#" target="_blank" class="btn btn-secondary">
+            📦 Buka Halaman Releases
           </a>
-          <a href="https://github.com/USERNAME/REPOSITORY" class="btn btn-secondary">
-            💻 Lihat Source Code
-          </a>
+        </div>
+
+        <div id="statusMessage" class="status-box"></div>
+
+        <div class="repo-config">
+          <label for="repoInput">Repositori GitHub:</label>
+          <input type="text" id="repoInput" placeholder="owner/PinkCat-Manager" onchange="updateRepositoryFromInput()">
         </div>
       </div>
       <div class="hero-image">
@@ -256,40 +308,125 @@
 
       <div class="card">
         <div class="card-icon">📦</div>
-        <h3>Manajemen & Info Detail Aplikasi</h3>
-        <p>Buka aplikasi langsung via Launcher Activity atau buka Pengaturan Aplikasi sistem untuk mengelola penyimpanan dan izin secara mudah.</p>
+        <h3>Buka & Kelola Aplikasi</h3>
+        <p>Buka aplikasi langsung via Launcher Activity resmi atau buka Pengaturan Aplikasi sistem untuk mengelola data dan perizinan.</p>
       </div>
 
       <div class="card">
         <div class="card-icon">🔎</div>
-        <h3>Pencarian Cepat & Filter Cerdas</h3>
-        <p>Temukan aplikasi berdasarkan nama atau package. Filter cepat: Semua Aplikasi, Punya Izin, Aplikasi Pengguna, dan Aplikasi Sistem.</p>
+        <h3>Pencarian Cepat & Filter</h3>
+        <p>Pencarian instan berdasarkan nama atau package. Filter cepat: Semua Aplikasi, Punya Izin, Aplikasi Pengguna, dan Aplikasi Sistem.</p>
       </div>
 
       <div class="card">
         <div class="card-icon">🛡️</div>
         <h3>Pemeriksaan Keamanan Nyata</h3>
-        <p>Status Kunci Layar (PIN/Pola/Biometrik), Opsi Pengembang, USB Debugging, dan panduan Google Play Protect tanpa status palsu.</p>
+        <p>Status Kunci Layar (PIN/Pola/Biometrik), Opsi Pengembang, USB Debugging, dan panduan Google Play Protect tanpa data palsu.</p>
       </div>
 
       <div class="card">
         <div class="card-icon">🌙</div>
         <h3>Tema Pink Cat & Mode Gelap</h3>
-        <p>UI pastel pink yang lembut, clean, dan profesional dengan dukungan Dark Mode penuh yang nyaman digunakan kapan saja.</p>
+        <p>UI pastel pink yang imut, rapi, dan profesional dengan dukungan Dark Mode penuh yang ramah di mata.</p>
       </div>
     </div>
 
     <div class="privacy-banner">
       <h3>🔒 100% Offline & Mengutamakan Privasi</h3>
-      <p>PinkCat Manager tidak mengirimkan satu pun data ke internet. Seluruh analisis spesifikasi dan perizinan diproses secara lokal di perangkat Anda.</p>
+      <p>PinkCat Manager tidak mengirimkan data ke internet. Seluruh analisis spesifikasi dan perizinan diproses secara lokal di perangkat Anda.</p>
     </div>
 
     <footer>
-      <p>© 2026 PinkCat Manager • Dibuat dengan Kotlin & Jetpack Compose • Dilindungi Lisensi Apache 2.0</p>
-      <p style="margin-top: 6px;">
-        <a href="https://github.com/USERNAME/REPOSITORY/releases" style="color: var(--primary); text-decoration: none; font-weight: 600;">Semua Versi GitHub Releases</a>
-      </p>
+      <p>© 2026 PinkCat Manager • Dibuat dengan Kotlin & Jetpack Compose • Lisensi Apache 2.0</p>
     </footer>
   </div>
+
+  <script>
+    // Detect GitHub repository from URL if hosted on GitHub Pages (e.g. username.github.io/repo)
+    function detectRepo() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('repo')) {
+        return urlParams.get('repo').trim();
+      }
+
+      const host = window.location.hostname;
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+
+      if (host.endsWith('.github.io') && pathSegments.length > 0) {
+        const owner = host.replace('.github.io', '');
+        const repo = pathSegments[0];
+        return `${owner}/${repo}`;
+      }
+
+      // Default fallback if running locally or not detected yet
+      const saved = localStorage.getItem('pinkcat_repo');
+      return saved || 'mjalalaopang201265/PinkCat-Manager';
+    }
+
+    let currentRepo = detectRepo();
+    document.getElementById('repoInput').value = currentRepo;
+    updateLinks();
+
+    function updateRepositoryFromInput() {
+      const inputVal = document.getElementById('repoInput').value.trim();
+      if (inputVal && inputVal.includes('/')) {
+        currentRepo = inputVal;
+        localStorage.setItem('pinkcat_repo', currentRepo);
+        updateLinks();
+        hideStatus();
+      }
+    }
+
+    function updateLinks() {
+      const repoUrl = `https://github.com/${currentRepo}`;
+      const releasesUrl = `${repoUrl}/releases`;
+      document.getElementById('headerRepoLink').href = repoUrl;
+      document.getElementById('releasesPageBtn').href = releasesUrl;
+    }
+
+    function showStatus(message, type) {
+      const box = document.getElementById('statusMessage');
+      box.className = `status-box ${type}`;
+      box.innerHTML = message;
+    }
+
+    function hideStatus() {
+      const box = document.getElementById('statusMessage');
+      box.style.display = 'none';
+    }
+
+    async function handleDownloadClick() {
+      showStatus('⏳ Memeriksa ketersediaan rilis APK terbaru dari GitHub...', 'loading');
+
+      try {
+        const apiUrl = `https://api.github.com/repos/${currentRepo}/releases/latest`;
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+          // If GitHub API returns 404 (no release created yet)
+          showStatus('⚠️ APK belum tersedia. Silakan coba lagi setelah proses build selesai.', 'warning');
+          return;
+        }
+
+        const releaseData = await response.json();
+        const assets = releaseData.assets || [];
+
+        // Find APK asset
+        const apkAsset = assets.find(a => a.name && a.name.endsWith('.apk'));
+
+        if (apkAsset && apkAsset.browser_download_url) {
+          showStatus(`✅ Menemukan file <strong>${apkAsset.name}</strong> (${(apkAsset.size / (1024*1024)).toFixed(1)} MB). Mengunduh...`, 'success');
+          // Trigger direct download
+          window.location.href = apkAsset.browser_download_url;
+        } else {
+          // Release exists but no APK asset attached
+          showStatus('⚠️ APK belum tersedia. Silakan coba lagi setelah proses build selesai.', 'warning');
+        }
+      } catch (err) {
+        // Network or fetch failure
+        showStatus('⚠️ APK belum tersedia. Silakan coba lagi setelah proses build selesai.', 'warning');
+      }
+    }
+  </script>
 </body>
 </html>

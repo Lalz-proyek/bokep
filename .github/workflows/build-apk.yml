@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: Build & Package APK
+    name: Build & Package Debug APK
     runs-on: ubuntu-latest
 
     steps:
@@ -29,49 +29,23 @@ jobs:
       - name: Grant Execute Permission for Gradlew
         run: chmod +x gradlew
 
-      - name: Prepare Signing Keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          if [ -n "$KEYSTORE_BASE64" ]; then
-            echo "Decoding provided release keystore..."
-            echo "$KEYSTORE_BASE64" | base64 --decode > my-upload-key.jks
-          else
-            echo "Generating CI upload keystore..."
-            keytool -genkey -v -keystore my-upload-key.jks \
-              -alias upload -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass android -keypass android \
-              -dname "CN=PinkCatManager, OU=Dev, O=PinkCat, L=Jakarta, ST=ID, C=ID"
-            echo "STORE_PASSWORD=android" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=android" >> $GITHUB_ENV
-          fi
-          echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/my-upload-key.jks" >> $GITHUB_ENV
+      - name: Build Debug APK with Gradle
+        run: ./gradlew assembleDebug
 
-      - name: Build APK with Gradle
-        env:
-          STORE_PASSWORD: ${{ env.STORE_PASSWORD || secrets.STORE_PASSWORD || 'android' }}
-          KEY_PASSWORD: ${{ env.KEY_PASSWORD || secrets.KEY_PASSWORD || 'android' }}
-        run: ./gradlew assembleRelease
-
-      - name: Prepare APK Artifact
+      - name: Verify Generated APK File
         run: |
-          mkdir -p build-artifacts
-          APK_FILE=$(find app/build/outputs/apk/release/ -name "*.apk" | head -n 1)
-          if [ -f "$APK_FILE" ]; then
-            cp "$APK_FILE" build-artifacts/PinkCat-Manager-latest.apk
-            echo "APK prepared: build-artifacts/PinkCat-Manager-latest.apk"
-          else
-            echo "ERROR: Release APK not found!"
+          APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
+          if [ ! -f "$APK_PATH" ]; then
+            echo "::error::File APK $APK_PATH tidak ditemukan! Build gagal atau tidak menghasilkan APK."
             exit 1
           fi
+          FILE_SIZE=$(stat -c%s "$APK_PATH" 2>/dev/null || stat -f%z "$APK_PATH")
+          echo "APK valid ditemukan di: $APK_PATH (Ukuran: $FILE_SIZE bytes)"
 
-      - name: Upload APK as Workflow Artifact
+      - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PinkCat-Manager-APK
-          path: build-artifacts/PinkCat-Manager-latest.apk
+          name: PinkCat-Manager-Debug-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
